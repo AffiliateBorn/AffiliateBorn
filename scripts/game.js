@@ -4,12 +4,20 @@ class FroggerGame {
         this.ctx = this.canvas.getContext('2d');
         this.score = 0;
         this.lives = 3;
+        this.currentLevel = 1; // New variable to track levels
+        this.highScore = this.loadHighScore(); // Load high score from localStorage
         this.frog = { x: 0, y: 0, width: 40, height: 40 };
         this.cars = [];
         this.powerUps = [];
         this.lanes = 5;
         this.laneHeight = 0;
         this.images = {};
+        this.levelSettings = {
+            1: { carSpeed: 2, numCars: 3 },
+            2: { carSpeed: 3, numCars: 4 },
+            3: { carSpeed: 4, numCars: 5 },
+            4: { carSpeed: 5, numCars: 6 },
+        };
 
         this.initializeGame();
     }
@@ -18,9 +26,11 @@ class FroggerGame {
         this.resizeCanvas(tgApp.viewportHeight, tgApp.viewportHeight);
         this.loadImages();
         this.resetFrog();
+        this.updateGameSettings();
         this.generateCars();
         this.generatePowerUps();
         this.setupEventListeners();
+        this.updateScoreboard(); // Update the scoreboard at the start
         this.gameLoop();
     }
 
@@ -45,15 +55,25 @@ class FroggerGame {
         this.frog.y = this.canvas.height - this.frog.height;
     }
 
+    updateGameSettings() {
+        const settings = this.levelSettings[this.currentLevel] || {
+            carSpeed: 2 + this.currentLevel,
+            numCars: 3 + this.currentLevel,
+        };
+
+        this.carSpeed = settings.carSpeed;
+        this.numCars = settings.numCars;
+    }
+
     generateCars() {
         this.cars = [];
-        for (let i = 1; i <= this.lanes; i++) {
+        for (let i = 1; i <= this.numCars; i++) {
             const car = {
                 x: Math.random() * this.canvas.width,
                 y: i * this.laneHeight,
                 width: 60,
                 height: 30,
-                speed: (Math.random() + 1) * 2 * (Math.random() < 0.5 ? 1 : -1)
+                speed: this.carSpeed * (Math.random() < 0.5 ? 1 : -1)
             };
             this.cars.push(car);
         }
@@ -95,6 +115,8 @@ class FroggerGame {
                 this.frog.x = Math.min(this.frog.x + moveDistance, this.canvas.width - this.frog.width);
                 break;
         }
+
+        this.checkLevelCompletion(); // Check if player completes level
     }
 
     handleTouch(event) {
@@ -113,6 +135,20 @@ class FroggerGame {
         } else {
             this.frog.x = Math.min(this.frog.x + moveDistance, this.canvas.width - this.frog.width);
         }
+
+        this.checkLevelCompletion(); // Check if player completes level
+    }
+
+    checkLevelCompletion() {
+        if (this.frog.y <= 0) {
+            this.currentLevel++;
+            alert(`Level ${this.currentLevel} starts!`);
+            this.resetFrog();
+            this.updateGameSettings();
+            this.generateCars();
+            this.generatePowerUps();
+            this.updateScoreboard();
+        }
     }
 
     gameLoop() {
@@ -125,7 +161,7 @@ class FroggerGame {
         this.moveCars();
         this.checkCollisions();
         this.checkPowerUpCollection();
-        this.updateScore();
+        this.updateScoreboard();
     }
 
     moveCars() {
@@ -172,9 +208,25 @@ class FroggerGame {
                obj1.y + obj1.height > obj2.y;
     }
 
-    updateScore() {
+    updateScoreboard() {
         document.getElementById('score').textContent = `Score: ${this.score}`;
         document.getElementById('lives').textContent = `Lives: ${this.lives}`;
+        document.getElementById('level').textContent = `Level: ${this.currentLevel}`;
+
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            this.saveHighScore(this.highScore);
+        }
+
+        document.getElementById('high-score').textContent = `High Score: ${this.highScore}`;
+    }
+
+    saveHighScore(score) {
+        localStorage.setItem('froggerHighScore', score);
+    }
+
+    loadHighScore() {
+        return parseInt(localStorage.getItem('froggerHighScore')) || 0;
     }
 
     draw() {
@@ -201,9 +253,12 @@ class FroggerGame {
         alert(`Game Over! Your score: ${this.score}`);
         this.score = 0;
         this.lives = 3;
+        this.currentLevel = 1; // Reset to level 1
         this.resetFrog();
+        this.updateGameSettings();
         this.generateCars();
         this.generatePowerUps();
+        this.updateScoreboard();
     }
 }
 
