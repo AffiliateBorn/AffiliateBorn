@@ -23,7 +23,7 @@ class FroggerGame {
     }
 
     initializeGame() {
-        this.resizeCanvas(tgApp.viewportHeight, tgApp.viewportHeight);
+        this.resizeCanvas();
         this.loadImages();
         this.resetFrog();
         this.updateGameSettings();
@@ -34,9 +34,10 @@ class FroggerGame {
         this.gameLoop();
     }
 
-    resizeCanvas(width, height) {
-        this.canvas.width = width;
-        this.canvas.height = height;
+    resizeCanvas() {
+        // Adjust the canvas to fill the game-container
+        this.canvas.width = this.canvas.parentElement.clientWidth;
+        this.canvas.height = this.canvas.parentElement.clientHeight;
         this.laneHeight = this.canvas.height / (this.lanes + 1);
         this.resetFrog();
     }
@@ -78,6 +79,78 @@ class FroggerGame {
                 type: isCarOne ? 'car' : 'car2' // Assign type for the respective car
             };
             this.cars.push(car);
+        }
+    }
+
+    generatePowerUps() {
+        this.powerUps = [];
+        for (let i = 0; i < 3; i++) {
+            const powerUp = {
+                x: Math.random() * (this.canvas.width - 20),
+                y: Math.random() * (this.canvas.height - this.laneHeight - 20) + this.laneHeight,
+                width: 20,
+                height: 20
+            };
+            this.powerUps.push(powerUp);
+        }
+    }
+
+    setupEventListeners() {
+        document.addEventListener('keydown', this.handleKeyPress.bind(this));
+        this.canvas.addEventListener('touchstart', this.handleTouch.bind(this));
+    }
+
+    handleKeyPress(event) {
+        const key = event.key;
+        const moveDistance = 10;
+
+        switch (key) {
+            case 'ArrowUp':
+                this.frog.y = Math.max(this.frog.y - moveDistance, 0);
+                break;
+            case 'ArrowDown':
+                this.frog.y = Math.min(this.frog.y + moveDistance, this.canvas.height - this.frog.height);
+                break;
+            case 'ArrowLeft':
+                this.frog.x = Math.max(this.frog.x - moveDistance, 0);
+                break;
+            case 'ArrowRight':
+                this.frog.x = Math.min(this.frog.x + moveDistance, this.canvas.width - this.frog.width);
+                break;
+        }
+
+        this.checkLevelCompletion(); // Check if player completes level
+    }
+
+    handleTouch(event) {
+        event.preventDefault();
+        const touch = event.touches[0];
+        const moveDistance = 10;
+
+        if (touch.clientY < this.canvas.height / 2) {
+            this.frog.y = Math.max(this.frog.y - moveDistance, 0);
+        } else {
+            this.frog.y = Math.min(this.frog.y + moveDistance, this.canvas.height - this.frog.height);
+        }
+
+        if (touch.clientX < this.canvas.width / 2) {
+            this.frog.x = Math.max(this.frog.x - moveDistance, 0);
+        } else {
+            this.frog.x = Math.min(this.frog.x + moveDistance, this.canvas.width - this.frog.width);
+        }
+
+        this.checkLevelCompletion(); // Check if player completes level
+    }
+
+    checkLevelCompletion() {
+        if (this.frog.y <= 0) {
+            this.currentLevel++;
+            alert(`Level ${this.currentLevel} starts!`);
+            this.resetFrog();
+            this.updateGameSettings();
+            this.generateCars();
+            this.generatePowerUps();
+            this.updateScoreboard();
         }
     }
 
