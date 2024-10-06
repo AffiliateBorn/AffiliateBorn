@@ -1,0 +1,30 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+}
+
+#game-container {
+    position: relative;
+}
+
+#game-canvas {
+    border: 1px solid #000;
+}
+
+#game-ui {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-family: Arial, sans-serif;
+    color: white;
+    text-shadow: 1px 1px 2px black;
+}
+
+#score, #lives {
+    margin-right: 20px;
+}
