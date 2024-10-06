@@ -7,11 +7,38 @@
     <link rel="stylesheet" href="styles/main.css">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Additional styling for sidebar */
+        /* Updated styling for streamlined layout */
+
+        /* Body and game container styling */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        #game-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 90vh;
+        }
+
+        #game-canvas {
+            border: 2px solid #000;
+            background-color: #cfcfcf;
+            flex-grow: 1;
+            max-width: 70vw;
+            max-height: 100%;
+        }
+
+        /* Sidebar styling */
         #sidebar {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+            margin-left: 20px;
             width: 200px;
             background-color: #f0f0f0;
             border: 2px solid black;
@@ -19,10 +46,13 @@
             box-sizing: border-box;
             font-family: Arial, sans-serif;
             font-size: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            height: 90vh;
         }
 
         .sidebar-item {
-            margin-bottom: 20px;
             padding: 10px;
             border: 2px solid #333;
             text-align: center;
@@ -38,29 +68,34 @@
         .sidebar-item .value {
             font-size: 24px;
         }
+
+        /* Hide the old game UI as it's replaced by the sidebar */
+        #game-ui {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <div id="sidebar">
-        <div class="sidebar-item">
-            <span class="label">Level</span>
-            <span id="level" class="value">1</span>
-        </div>
-        <div class="sidebar-item">
-            <span class="label">Score</span>
-            <span id="score" class="value">0</span>
-        </div>
-        <div class="sidebar-item">
-            <span class="label">High Score</span>
-            <span id="high-score" class="value">0</span>
-        </div>
-        <div class="sidebar-item">
-            <span class="label">Lives</span>
-            <span id="lives" class="value">3</span>
-        </div>
-    </div>
     <div id="game-container">
         <canvas id="game-canvas"></canvas>
+        <div id="sidebar">
+            <div class="sidebar-item">
+                <span class="label">Level</span>
+                <span id="level" class="value">1</span>
+            </div>
+            <div class="sidebar-item">
+                <span class="label">Score</span>
+                <span id="score" class="value">0</span>
+            </div>
+            <div class="sidebar-item">
+                <span class="label">High Score</span>
+                <span id="high-score" class="value">0</span>
+            </div>
+            <div class="sidebar-item">
+                <span class="label">Lives</span>
+                <span id="lives" class="value">3</span>
+            </div>
+        </div>
     </div>
     <script src="scripts/telegram.js"></script>
     <script src="scripts/game.js"></script>
