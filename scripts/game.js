@@ -6,6 +6,9 @@ class FroggerGame {
         this.lives = 3;
         this.currentLevel = 1; // Variable to track levels
         this.highScore = this.loadHighScore(); // Load high score from localStorage
+        this.longestGameTime = this.loadLongestGameTime(); // Load longest game time
+        this.startTime = null;
+        this.timerInterval = null;
         this.frog = { x: 0, y: 0, width: 40, height: 40 };
         this.cars = [];
         this.powerUps = [];
@@ -31,6 +34,7 @@ class FroggerGame {
         this.generatePowerUps();
         this.setupEventListeners();
         this.updateScoreboard(); // Update the scoreboard at the start
+        this.startTimer(); // Start the game timer
         this.gameLoop();
     }
 
@@ -64,6 +68,30 @@ class FroggerGame {
 
         this.carSpeed = settings.carSpeed;
         this.numCars = settings.numCars;
+    }
+
+    startTimer() {
+        this.startTime = Date.now();
+        this.timerInterval = setInterval(() => {
+            const elapsedTime = Math.floor((Date.now() - this.startTime) / 1000);
+            document.getElementById('timer').textContent = this.formatTime(elapsedTime);
+        }, 1000);
+    }
+
+    stopTimer() {
+        clearInterval(this.timerInterval);
+        const elapsedTime = Math.floor((Date.now() - this.startTime) / 1000);
+        if (elapsedTime > this.longestGameTime) {
+            this.longestGameTime = elapsedTime;
+            this.saveLongestGameTime(this.longestGameTime);
+        }
+        document.getElementById('longest-game').textContent = this.formatTime(this.longestGameTime);
+    }
+
+    formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
     generateCars() {
@@ -189,6 +217,7 @@ class FroggerGame {
                 this.lives--;
                 this.resetFrog();
                 if (this.lives <= 0) {
+                    this.stopTimer(); // Stop the timer when the game is over
                     this.gameOver();
                 }
             }
@@ -235,6 +264,14 @@ class FroggerGame {
 
     loadHighScore() {
         return parseInt(localStorage.getItem('froggerHighScore')) || 0;
+    }
+
+    saveLongestGameTime(time) {
+        localStorage.setItem('froggerLongestGameTime', time);
+    }
+
+    loadLongestGameTime() {
+        return parseInt(localStorage.getItem('froggerLongestGameTime')) || 0;
     }
 
     draw() {
