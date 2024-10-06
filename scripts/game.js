@@ -4,7 +4,7 @@ class FroggerGame {
         this.ctx = this.canvas.getContext('2d');
         this.score = 0;
         this.lives = 3;
-        this.currentLevel = 1; // New variable to track levels
+        this.currentLevel = 1; // Variable to track levels
         this.highScore = this.loadHighScore(); // Load high score from localStorage
         this.frog = { x: 0, y: 0, width: 40, height: 40 };
         this.cars = [];
@@ -144,6 +144,10 @@ class FroggerGame {
 
     checkLevelCompletion() {
         if (this.frog.y <= 0) {
+            // Award points for completing the level
+            const levelPoints = 10 * this.currentLevel; // Points increase incrementally for each level
+            this.score += levelPoints;
+
             this.currentLevel++;
             alert(`Level ${this.currentLevel} starts!`);
             this.resetFrog();
