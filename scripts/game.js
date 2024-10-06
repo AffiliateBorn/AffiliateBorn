@@ -148,8 +148,9 @@ class FroggerGame {
             const levelPoints = 10 * this.currentLevel; // Points increase incrementally for each level
             this.score += levelPoints;
 
+            alert(`You earned ${levelPoints} points for beating level ${this.currentLevel}!`);
+            
             this.currentLevel++;
-            alert(`Level ${this.currentLevel} starts!`);
             this.resetFrog();
             this.updateGameSettings();
             this.generateCars();
