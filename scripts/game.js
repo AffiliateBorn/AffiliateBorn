@@ -42,7 +42,7 @@ class FroggerGame {
     }
 
     loadImages() {
-        const imageNames = ['frog', 'car', 'background', 'power_up'];
+        const imageNames = ['frog', 'car', 'car2', 'background', 'power_up'];
         imageNames.forEach(name => {
             const img = new Image();
             img.src = `assets/${name}.png`;
@@ -68,12 +68,14 @@ class FroggerGame {
     generateCars() {
         this.cars = [];
         for (let i = 1; i <= this.numCars; i++) {
+            const isCarOne = i % 2 === 1; // Alternate between car1 and car2
             const car = {
-                x: Math.random() * this.canvas.width,
+                x: isCarOne ? Math.random() * this.canvas.width : -60, // Start car1 from random position and car2 from the left edge
                 y: i * this.laneHeight,
                 width: 60,
                 height: 30,
-                speed: this.carSpeed * (Math.random() < 0.5 ? 1 : -1)
+                speed: isCarOne ? -this.carSpeed : this.carSpeed, // Car1 moves right to left, Car2 moves left to right
+                type: isCarOne ? 'car' : 'car2' // Assign type for the respective car
             };
             this.cars.push(car);
         }
@@ -237,7 +239,8 @@ class FroggerGame {
 
         // Draw cars
         this.cars.forEach(car => {
-            this.ctx.drawImage(this.images.car, car.x, car.y, car.width, car.height);
+            const carImage = this.images[car.type];
+            this.ctx.drawImage(carImage, car.x, car.y, car.width, car.height);
         });
 
         // Draw power-ups

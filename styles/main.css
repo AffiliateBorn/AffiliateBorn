@@ -6,25 +6,49 @@ body {
     align-items: center;
     height: 100vh;
     background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
 }
 
 #game-container {
     position: relative;
+    display: flex;
 }
 
 #game-canvas {
-    border: 1px solid #000;
+    border: 2px solid #000;
+    background-color: #cfcfcf; /* Background for canvas to make it visually distinct */
+}
+
+#sidebar {
+    position: relative;
+    margin-left: 20px;
+    width: 200px;
+    background-color: #f0f0f0;
+    border: 2px solid black;
+    padding: 10px;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+}
+
+.sidebar-item {
+    margin-bottom: 20px;
+    padding: 10px;
+    border: 2px solid #333;
+    text-align: center;
+    background-color: #fff;
+}
+
+.sidebar-item .label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.sidebar-item .value {
+    font-size: 24px;
 }
 
 #game-ui {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-family: Arial, sans-serif;
-    color: white;
-    text-shadow: 1px 1px 2px black;
-}
-
-#score, #lives {
-    margin-right: 20px;
+    display: none; /* Hide the old game UI as it's replaced by the sidebar */
 }
