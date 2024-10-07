@@ -175,7 +175,7 @@ class FroggerGame {
             this.score += levelPoints;
 
             // Show level completion message
-            this.showLevelCompletionMessage(`You earned ${levelPoints} Flys for beating level ${this.currentLevel}!`);
+            this.showLevelCompleteMessage(levelPoints, this.currentLevel);
 
             this.currentLevel++;
             this.resetFrog();
@@ -186,21 +186,13 @@ class FroggerGame {
         }
     }
 
-    showLevelCompletionMessage(message) {
-        const bubbleX = this.canvas.width / 2;
-        const bubbleY = 50;
-
-        this.ctx.fillStyle = 'white';
-        this.ctx.strokeStyle = 'black';
-        this.ctx.lineWidth = 2;
-        this.ctx.font = 'bold 24px "Press Start 2P", Arial';
-        this.ctx.textAlign = 'center';
-        this.ctx.strokeText(message, bubbleX, bubbleY);
-        this.ctx.fillText(message, bubbleX, bubbleY);
-        
+    showLevelCompleteMessage(points, level) {
+        const message = document.getElementById('level-complete-message');
+        message.textContent = `You Earned ${points} Points for Beating Level ${level}!`;
+        message.style.display = 'block';
         setTimeout(() => {
-            this.ctx.clearRect(bubbleX - 200, bubbleY - 30, 400, 40);
-        }, 2000);
+            message.style.display = 'none';
+        }, 3000); // Hide after 3 seconds
     }
 
     gameLoop() {
@@ -262,7 +254,7 @@ class FroggerGame {
     }
 
     updateScoreboard() {
-        document.getElementById('score').textContent = `Flys: ${this.score}`;
+        document.getElementById('score').textContent = `Points: ${this.score}`;
         document.getElementById('lives').textContent = `Lives: ${this.lives}`;
         document.getElementById('level').textContent = `Level: ${this.currentLevel}`;
 
