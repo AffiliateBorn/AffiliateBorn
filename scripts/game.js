@@ -4,16 +4,16 @@ class FroggerGame {
         this.ctx = this.canvas.getContext('2d');
         this.score = 0;
         this.lives = 3;
-        this.currentLevel = 1; // Variable to track levels
-        this.highScore = this.loadHighScore(); // Load high score from localStorage
-        this.longestGameTime = this.loadLongestGameTime(); // Load longest game time
+        this.currentLevel = 1;
+        this.highScore = this.loadHighScore();
+        this.longestGameTime = this.loadLongestGameTime();
         this.startTime = null;
         this.timerInterval = null;
         this.frog = { x: 0, y: 0, width: 40, height: 40 };
         this.cars = [];
         this.powerUps = [];
         this.activePowerUp = null;
-        this.powerUpTimer = null; // Track current power-up timer
+        this.powerUpTimer = null;
         this.lanes = 5;
         this.laneHeight = 0;
         this.images = {};
@@ -35,13 +35,12 @@ class FroggerGame {
         this.generateCars();
         this.generatePowerUps();
         this.setupEventListeners();
-        this.updateScoreboard(); // Update the scoreboard at the start
-        this.startTimer(); // Start the game timer
+        this.updateScoreboard();
+        this.startTimer();
         this.gameLoop();
     }
 
     resizeCanvas() {
-        // Adjust the canvas to fill the game-container
         this.canvas.width = this.canvas.parentElement.clientWidth;
         this.canvas.height = this.canvas.parentElement.clientHeight;
         this.laneHeight = this.canvas.height / (this.lanes + 1);
@@ -99,14 +98,14 @@ class FroggerGame {
     generateCars() {
         this.cars = [];
         for (let i = 1; i <= this.numCars; i++) {
-            const isCarOne = i % 2 === 1; // Alternate between car1 and car2
+            const isCarOne = i % 2 === 1;
             const car = {
-                x: isCarOne ? Math.random() * this.canvas.width : -60, // Start car1 from random position and car2 from the left edge
+                x: isCarOne ? Math.random() * this.canvas.width : -60,
                 y: i * this.laneHeight,
                 width: 60,
                 height: 30,
-                speed: isCarOne ? -this.carSpeed : this.carSpeed, // Car1 moves right to left, Car2 moves left to right
-                type: isCarOne ? 'car' : 'car2' // Assign type for the respective car
+                speed: isCarOne ? -this.carSpeed : this.carSpeed,
+                type: isCarOne ? 'car' : 'car2'
             };
             this.cars.push(car);
         }
@@ -114,7 +113,7 @@ class FroggerGame {
 
     generatePowerUps() {
         this.powerUps = [];
-        if (Math.random() > 0.5 && this.currentLevel % 2 === 0) { // Randomly appear every 2-4 levels
+        if (Math.random() > 0.5 && this.currentLevel % 2 === 0) {
             const types = ['invincibility', 'speed_boost', 'slow_cars'];
             const type = types[Math.floor(Math.random() * types.length)];
             const powerUp = {
@@ -152,7 +151,7 @@ class FroggerGame {
                 break;
         }
 
-        this.checkLevelCompletion(); // Check if player completes level
+        this.checkLevelCompletion();
     }
 
     handleTouch(event) {
@@ -172,23 +171,16 @@ class FroggerGame {
             this.frog.x = Math.min(this.frog.x + moveDistance, this.canvas.width - this.frog.width);
         }
 
-        this.checkLevelCompletion(); // Check if player completes level
+        this.checkLevelCompletion();
     }
 
     checkLevelCompletion() {
         if (this.frog.y <= 0) {
-            // Award points for completing the level
-            const levelPoints = 10 * this.currentLevel; // Points increase incrementally for each level
+            const levelPoints = 10 * this.currentLevel;
             this.score += levelPoints;
 
-            // Notify player using a non-blocking alert
-            const notification = document.createElement('div');
-            notification.classList.add('notification');
-            notification.textContent = `You earned ${levelPoints} Flys for beating level ${this.currentLevel}!`;
-            document.body.appendChild(notification);
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 3000);
+            // Show level completion message
+            this.showLevelCompletionMessage(`You earned ${levelPoints} points for beating level ${this.currentLevel}!`);
 
             this.currentLevel++;
             this.resetFrog();
@@ -199,49 +191,52 @@ class FroggerGame {
         }
     }
 
+    showLevelCompletionMessage(message) {
+        const bubbleX = this.canvas.width / 2;
+        const bubbleY = 50;
+
+        this.ctx.fillStyle = 'white';
+        this.ctx.strokeStyle = 'black';
+        this.ctx.lineWidth = 2;
+        this.ctx.font = 'bold 24px "Press Start 2P", Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.strokeText(message, bubbleX, bubbleY);
+        this.ctx.fillText(message, bubbleX, bubbleY);
+        
+        // Show the message for 2 seconds
+        setTimeout(() => {
+            this.ctx.clearRect(bubbleX - 200, bubbleY - 30, 400, 40);
+        }, 2000);
+    }
+
     activatePowerUp(powerUp) {
         if (this.powerUpTimer) {
-            clearTimeout(this.powerUpTimer); // Clear previous power-up timer
-            this.deactivatePowerUp(); // Deactivate previous power-up
+            clearTimeout(this.powerUpTimer);
         }
 
         this.activePowerUp = powerUp.type;
         document.getElementById('active-power-up').textContent = `Power-Up: ${this.formatPowerUpName(this.activePowerUp)}`;
 
-        // Activate power-up effect
         if (powerUp.type === 'invincibility') {
-            this.lives = Infinity; // Makes the frog invincible
+            this.lives = Infinity;
         } else if (powerUp.type === 'slow_cars') {
-            this.cars.forEach(car => car.speed /= 2); // Slows down cars
+            this.cars.forEach(car => car.speed /= 2);
         }
 
-        // Set timer to deactivate power-up
         this.powerUpTimer = setTimeout(() => {
             this.deactivatePowerUp();
-        }, 15000); // Power-up lasts for 15 seconds
+        }, 15000);
     }
 
     deactivatePowerUp() {
         if (this.activePowerUp === 'invincibility') {
-            this.lives = 3; // Resets lives back to 3
+            this.lives = 3;
         } else if (this.activePowerUp === 'slow_cars') {
-            this.cars.forEach(car => car.speed *= 2); // Restore car speed
+            this.cars.forEach(car => car.speed *= 2);
         }
+
         this.activePowerUp = null;
         document.getElementById('active-power-up').textContent = '';
-    }
-
-    formatPowerUpName(name) {
-        switch (name) {
-            case 'invincibility':
-                return 'Invincibility';
-            case 'speed_boost':
-                return 'Speed Up';
-            case 'slow_cars':
-                return 'Slow Cars';
-            default:
-                return '';
-        }
     }
 
     gameLoop() {
@@ -269,14 +264,14 @@ class FroggerGame {
     }
 
     checkCollisions() {
-        if (this.activePowerUp === 'invincibility') return; // Skip collisions if invincible
+        if (this.activePowerUp === 'invincibility') return;
 
         this.cars.forEach(car => {
             if (this.isColliding(this.frog, car)) {
                 this.lives--;
                 this.resetFrog();
                 if (this.lives <= 0) {
-                    this.stopTimer(); // Stop the timer when the game is over
+                    this.stopTimer();
                     this.gameOver();
                 }
             }
@@ -298,17 +293,15 @@ class FroggerGame {
     }
 
     isColliding(obj1, obj2) {
-        const overlapThreshold = 5; // Reduce sensitivity of collision detection
-        return obj1.x < obj2.x + obj2.width - overlapThreshold &&
-               obj1.x + obj1.width > obj2.x + overlapThreshold &&
-               obj1.y < obj2.y + obj2.height - overlapThreshold &&
-               obj1.y + obj1.height > obj2.y + overlapThreshold;
+        return obj1.x < obj2.x + obj2.width &&
+               obj1.x + obj1.width > obj2.x &&
+               obj1.y < obj2.y + obj2.height &&
+               obj1.y + obj1.height > obj2.y;
     }
 
     updateScoreboard() {
         document.getElementById('score').textContent = `Flys: ${this.score}`;
         document.getElementById('lives').textContent = `Lives: ${this.lives}`;
-        document.getElementById('level').textContent = `Level: ${this.currentLevel}`;
 
         if (this.score > this.highScore) {
             this.highScore = this.score;
@@ -366,7 +359,7 @@ class FroggerGame {
         alert(`Game Over! Your score: ${this.score}`);
         this.score = 0;
         this.lives = 3;
-        this.currentLevel = 1; // Reset to level 1
+        this.currentLevel = 1;
         this.resetFrog();
         this.updateGameSettings();
         this.generateCars();
