@@ -12,8 +12,6 @@ class FroggerGame {
         this.frog = { x: 0, y: 0, width: 40, height: 40 };
         this.cars = [];
         this.powerUps = [];
-        this.activePowerUp = null;
-        this.powerUpTimer = null;
         this.lanes = 5;
         this.laneHeight = 0;
         this.images = {};
@@ -48,7 +46,7 @@ class FroggerGame {
     }
 
     loadImages() {
-        const imageNames = ['frog', 'car', 'car2', 'background', 'power_up', 'invincibility_power_up', 'speed_boost_power_up', 'slow_cars_power_up'];
+        const imageNames = ['frog', 'car', 'car2', 'background', 'power_up'];
         imageNames.forEach(name => {
             const img = new Image();
             img.src = `assets/${name}.png`;
@@ -113,15 +111,12 @@ class FroggerGame {
 
     generatePowerUps() {
         this.powerUps = [];
-        if (Math.random() > 0.5 && this.currentLevel % 2 === 0) {
-            const types = ['invincibility', 'speed_boost', 'slow_cars'];
-            const type = types[Math.floor(Math.random() * types.length)];
+        for (let i = 0; i < 3; i++) {
             const powerUp = {
                 x: Math.random() * (this.canvas.width - 20),
                 y: Math.random() * (this.canvas.height - this.laneHeight - 20) + this.laneHeight,
                 width: 20,
-                height: 20,
-                type: type,
+                height: 20
             };
             this.powerUps.push(powerUp);
         }
@@ -134,7 +129,7 @@ class FroggerGame {
 
     handleKeyPress(event) {
         const key = event.key;
-        const moveDistance = 10 * (this.activePowerUp === 'speed_boost' ? 2 : 1);
+        const moveDistance = 10;
 
         switch (key) {
             case 'ArrowUp':
@@ -157,7 +152,7 @@ class FroggerGame {
     handleTouch(event) {
         event.preventDefault();
         const touch = event.touches[0];
-        const moveDistance = 10 * (this.activePowerUp === 'speed_boost' ? 2 : 1);
+        const moveDistance = 10;
 
         if (touch.clientY < this.canvas.height / 2) {
             this.frog.y = Math.max(this.frog.y - moveDistance, 0);
@@ -180,7 +175,7 @@ class FroggerGame {
             this.score += levelPoints;
 
             // Show level completion message
-            this.showLevelCompletionMessage(`You earned ${levelPoints} points for beating level ${this.currentLevel}!`);
+            this.showLevelCompletionMessage(`You earned ${levelPoints} Flys for beating level ${this.currentLevel}!`);
 
             this.currentLevel++;
             this.resetFrog();
@@ -203,40 +198,9 @@ class FroggerGame {
         this.ctx.strokeText(message, bubbleX, bubbleY);
         this.ctx.fillText(message, bubbleX, bubbleY);
         
-        // Show the message for 2 seconds
         setTimeout(() => {
             this.ctx.clearRect(bubbleX - 200, bubbleY - 30, 400, 40);
         }, 2000);
-    }
-
-    activatePowerUp(powerUp) {
-        if (this.powerUpTimer) {
-            clearTimeout(this.powerUpTimer);
-        }
-
-        this.activePowerUp = powerUp.type;
-        document.getElementById('active-power-up').textContent = `Power-Up: ${this.formatPowerUpName(this.activePowerUp)}`;
-
-        if (powerUp.type === 'invincibility') {
-            this.lives = Infinity;
-        } else if (powerUp.type === 'slow_cars') {
-            this.cars.forEach(car => car.speed /= 2);
-        }
-
-        this.powerUpTimer = setTimeout(() => {
-            this.deactivatePowerUp();
-        }, 15000);
-    }
-
-    deactivatePowerUp() {
-        if (this.activePowerUp === 'invincibility') {
-            this.lives = 3;
-        } else if (this.activePowerUp === 'slow_cars') {
-            this.cars.forEach(car => car.speed *= 2);
-        }
-
-        this.activePowerUp = null;
-        document.getElementById('active-power-up').textContent = '';
     }
 
     gameLoop() {
@@ -264,8 +228,6 @@ class FroggerGame {
     }
 
     checkCollisions() {
-        if (this.activePowerUp === 'invincibility') return;
-
         this.cars.forEach(car => {
             if (this.isColliding(this.frog, car)) {
                 this.lives--;
@@ -281,7 +243,7 @@ class FroggerGame {
     checkPowerUpCollection() {
         this.powerUps = this.powerUps.filter(powerUp => {
             if (this.isColliding(this.frog, powerUp)) {
-                this.activatePowerUp(powerUp);
+                this.score += 10;
                 return false;
             }
             return true;
@@ -302,6 +264,7 @@ class FroggerGame {
     updateScoreboard() {
         document.getElementById('score').textContent = `Flys: ${this.score}`;
         document.getElementById('lives').textContent = `Lives: ${this.lives}`;
+        document.getElementById('level').textContent = `Level: ${this.currentLevel}`;
 
         if (this.score > this.highScore) {
             this.highScore = this.score;
@@ -341,18 +304,11 @@ class FroggerGame {
 
         // Draw power-ups
         this.powerUps.forEach(powerUp => {
-            this.ctx.drawImage(this.images[`${powerUp.type}_power_up`], powerUp.x, powerUp.y, powerUp.width, powerUp.height);
+            this.ctx.drawImage(this.images['power_up'], powerUp.x, powerUp.y, powerUp.width, powerUp.height);
         });
 
         // Draw frog
         this.ctx.drawImage(this.images.frog, this.frog.x, this.frog.y, this.frog.width, this.frog.height);
-
-        // Draw active power-up above the frog
-        if (this.activePowerUp) {
-            this.ctx.fillStyle = 'black';
-            this.ctx.font = '16px Arial';
-            this.ctx.fillText(this.formatPowerUpName(this.activePowerUp), this.frog.x, this.frog.y - 10);
-        }
     }
 
     gameOver() {
