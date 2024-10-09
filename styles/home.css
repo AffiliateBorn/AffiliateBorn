@@ -1,0 +1,82 @@
+/* Reset basic styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Styling the home container */
+#home-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); /* Cool gradient background */
+    color: white;
+    font-family: 'Arial', sans-serif;
+}
+
+/* High score styling */
+#high-score h1 {
+    font-size: 36px;
+    text-align: center;
+    font-family: 'Press Start 2P', cursive; /* Pixelated font */
+    margin-top: 40px;
+    color: #ffd700; /* Gold color for the score */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7); /* Shadow for sleek effect */
+}
+
+/* Frog container */
+#frog-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#frog-image {
+    width: 200px;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    border-radius: 50%;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.4); /* Sleek shadow */
+}
+
+#frog-image:hover {
+    transform: scale(1.1);  /* Slight zoom-in effect on hover */
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.6); /* Bigger shadow on hover */
+}
+
+/* Button container styling */
+#buttons-container {
+    display: flex;
+    justify-content: space-around;
+    width: 80%;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+button {
+    background-color: #ff4500;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 18px;
+    font-family: 'Arial', sans-serif;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Sleek button shadow */
+}
+
+button:hover {
+    background-color: #e63946;
+    transform: translateY(-5px); /* Slight "lift" on hover */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5); /* Deeper shadow on hover */
+}
+
+button:active {
+    transform: translateY(-2px); /* Less "lift" on click */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow on click */
+}
